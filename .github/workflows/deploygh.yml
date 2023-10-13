@@ -1,0 +1,33 @@
+name: deploy-gh
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Deploy to Github Pages
+        run: |
+          git fetch origin gh-pages --depth=1
+          git worktree add ../gh-pages gh-pages --no-checkout
+          cp -rT dist/apps/frontend ../gh-pages
+          cd ../gh-pages
+          git add --all .
+          git commit -m "${{ steps.get-commit-msg.outputs.msg }}"
+          git push
+      - name: Push
+        run: |
+          git status
+          git push
+      - name: Make release
+        if: steps.get-version.outputs.version != ''
+        run: |
+          gh release create ${{ steps.get-version.outputs.version }} --generate-notes --target $(git rev-parse HEAD)
+        env:
+          GH_TOKEN: ${{ github.token }}
