@@ -12,6 +12,40 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+     deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+      - name: Get version # TODO(eeeqeee) add option to increment from current version
+        id: get-version
+        run: |
+          echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+      - name: Set git config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Change version
+        if: steps.get-version.outputs.version != ''
+        run: |
+          TEMP_FILE=$(mktemp)
+          jq --arg v "${{ steps.get-version.outputs.version }}" '.version = $v' package.json > $TEMP_FILE
+          cp $TEMP_FILE package.json
+          git add .
+          git commit -m "${{ steps.get-version.outputs.version }}"
+      - name: Get commit msg
+        id: get-commit-msg
+        run: |
+          if [[ -z "${{ steps.get-version.outputs.version }}" ]]; then
+            echo "msg=deploy: $(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          else
+            echo "msg=deploy: version ${{ steps.get-version.outputs.version }} $(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          fi
       - name: Deploy to Github Pages
         run: |
           git fetch origin gh-pages --depth=1
