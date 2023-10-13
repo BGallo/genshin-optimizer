@@ -1,4 +1,5 @@
 import type {
+  ArtifactRarity,
   ArtifactSetKey,
   ArtifactSlotKey,
   MainStatKey,
@@ -10,6 +11,8 @@ import { getRollsRemaining, getSubstatValue } from '@genshin-optimizer/gi-util'
 import { objKeyMap } from '@genshin-optimizer/util'
 import type { ICachedArtifact } from '../../Types/artifact'
 import type { RollColorKey } from '../../Types/consts'
+import { allStats } from '@genshin-optimizer/gi-stats'
+import KeyMap, { cacheValueString } from '../../KeyMap'
 
 const maxStar: RarityKey = 5
 
@@ -38,8 +41,59 @@ export default class Artifact {
         )
       )
   )
+  //tooflesswolf functions
+  static rollsRemaining = (level: number, rarity: RarityKey) =>
+    Math.ceil((rarity * 4 - level) / 4)
+    static getSubstatRollData = (substatKey: SubstatKey, rarity: RarityKey) => {
+      if (substatKey.endsWith('_'))
+        // TODO: % CONVERSION
+        return allStats.art.sub[rarity][substatKey].map((v) => v * 100)
+      return allStats.art.sub[rarity][substatKey]
+    }
+
+    static getSubstatRolls = (
+      substatKey: SubstatKey,
+      substatValue: number,
+      rarity: ArtifactRarity
+    ): number[][] => {
+      const rollData = Artifact.getSubstatRollData(substatKey, rarity)
+      const table = allStats.art.subRoll[rarity][substatKey]
+      const lookupValue = cacheValueString(substatValue, KeyMap.unit(substatKey))
+      return table[lookupValue]?.map((roll) => roll.map((i) => rollData[i])) ?? []
+    }
+
+    static substatValue = (
+      substatKey: SubstatKey,
+      rarity = maxStar,
+      type: 'max' | 'min' | 'mid' = 'max'
+    ): number => {
+      const substats = allStats.art.sub[rarity][substatKey]
+      const value =
+        type === 'max'
+          ? Math.max(...substats)
+          : type === 'min'
+          ? Math.min(...substats)
+          : substats.reduce((a, b) => a + b, 0) / substats.length
+      return substatKey.endsWith('_') ? value * 100 : value
+    }
+    static mainStatValues = (
+      numStar: RarityKey,
+      statKey: MainStatKey
+    ): readonly number[] => {
+      if (statKey.endsWith('_'))
+        // TODO: % CONVERSION
+        return allStats.art.main[numStar][statKey].map((k) => k * 100)
+      return allStats.art.main[numStar][statKey]
+    }
+    static mainStatValue = (
+      key: MainStatKey,
+      rarity: RarityKey,
+      level: number
+    ): number => Artifact.mainStatValues(rarity, key)[level]
 
   //ARTIFACT IN GENERAL
+
+
   static getArtifactEfficiency(
     artifact: ICachedArtifact,
     filter: Set<SubstatKey>

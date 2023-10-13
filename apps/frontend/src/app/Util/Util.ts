@@ -1,3 +1,19 @@
+
+export const clamp = (val, low, high) => {
+  if (val < low) return low
+  if (val > high) return high
+  return val
+}
+
+//fromEntries doesn't result in StrictDict, this is just a utility wrapper.
+export function objectKeyMap<K extends string | number, V>(
+  keys: readonly K[],
+  map: (key: K, i: number) => V
+): StrictDict<`${K}`, V> {
+  return Object.fromEntries(keys.map((k, i) => [k, map(k, i)])) as any
+}
+
+
 //assign obj.[keys...] = value
 export function layeredAssignment(obj, keys: readonly string[], value) {
   keys.reduce((accu, key, i, arr) => {

@@ -68,6 +68,7 @@ import TabTeambuffs from './Tabs/TabTeambuffs'
 import TabTheorycraft from './Tabs/TabTheorycraft'
 import TravelerElementSelect from './TravelerElementSelect'
 import TravelerGenderSelect from './TravelerGenderSelect'
+import TabUpopt from './Tabs/TabUpgradeOpt'
 
 export default function CharacterDisplay() {
   const navigate = useNavigate()
@@ -231,6 +232,7 @@ function CharacterPanel() {
         <Route path="/teambuffs" element={<TabTeambuffs />} />
         <Route path="/optimize" element={<TabBuild />} />
         <Route path="/theorycraft" element={<TabTheorycraft />} />
+        <Route path="/upopt" element={<TabUpopt />} />
       </Routes>
     </Suspense>
   )
@@ -249,8 +251,9 @@ function TabNav({ tab }: { tab: string }) {
         },
       }}
     >
-      <Tab
-        sx={{ minWidth: '20%' }}
+
+     <Tab
+        sx={{ minWidth: '16.6%' }}
         value="overview"
         label={t('tabs.overview')}
         icon={<Person />}
@@ -258,7 +261,7 @@ function TabNav({ tab }: { tab: string }) {
         to=""
       />
       <Tab
-        sx={{ minWidth: '20%' }}
+        sx={{ minWidth: '16.6%' }}
         value="talent"
         label={t('tabs.talent')}
         icon={<FactCheck />}
@@ -266,7 +269,7 @@ function TabNav({ tab }: { tab: string }) {
         to="talent"
       />
       <Tab
-        sx={{ minWidth: '20%' }}
+        sx={{ minWidth: '16.6%' }}
         value="teambuffs"
         label={t('tabs.teambuffs')}
         icon={<Groups />}
@@ -274,7 +277,7 @@ function TabNav({ tab }: { tab: string }) {
         to="teambuffs"
       />
       <Tab
-        sx={{ minWidth: '20%' }}
+        sx={{ minWidth: '16.6%' }}
         value="optimize"
         label={t('tabs.optimize')}
         icon={<TrendingUp />}
@@ -282,12 +285,20 @@ function TabNav({ tab }: { tab: string }) {
         to="optimize"
       />
       <Tab
-        sx={{ minWidth: '20%' }}
+        sx={{ minWidth: '16.6%' }}
         value="theorycraft"
         label={t('tabs.theorycraft')}
         icon={<Science />}
         component={RouterLink}
         to="theorycraft"
+      />
+      <Tab
+        sx={{ minWidth: '16.6%' }}
+        value="upopt"
+        label={t('tabs.upgradeopt')}
+        icon={<TrendingUp />}
+        component={RouterLink}
+        to="upopt"
       />
     </Tabs>
   )

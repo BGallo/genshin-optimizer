@@ -264,6 +264,15 @@ const subKeyMap: StrictDict<KeyMapPrefix, string> = {
   teamBuff: 'Team',
 }
 
+export function cacheValueString(value: number, unit: Unit): string {
+  switch (unit) {
+    case '%':
+      return (Math.round(value * 10) / 10).toFixed(1) // TODO: % conversion
+    default:
+      return Math.round(value).toFixed(0)
+  }
+}
+
 export const allStatKeys = Object.keys(statMap) as StatKey[]
 export default class KeyMap {
   //do not instantiate.
