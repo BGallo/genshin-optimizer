@@ -12,10 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-     deploy:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
       - name: Checkout
         uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -46,6 +42,11 @@ jobs:
           else
             echo "msg=deploy: version ${{ steps.get-version.outputs.version }} $(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           fi
+      - name: Setup .env
+        run: |
+          printf '%s' "$ENVFILE" > apps/frontend/.env.local
+        env:
+          ENVFILE: ${{ secrets.ENVFILE }}
       - name: Deploy to Github Pages
         run: |
           git fetch origin gh-pages --depth=1
